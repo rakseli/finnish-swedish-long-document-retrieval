@@ -41,9 +41,15 @@ def serialize_datetime(obj):
     raise TypeError("Type not serializable")
 
 
-def load_ids(data_path):    
+def load_ids(args):
+    if args.mode == 'corpus':
+        ending = "*corpus_ids.jsonl"
+    elif args.mode =='test_dev':
+        ending = "*test_dev_ids.jsonl"
+    else:
+        raise ValueError(f"--mode should be corpus or test_dev, {args.mode} given")
     ids = set()
-    f_p = glob.glob(os.path.join(data_path,"*corpus_ids.jsonl"))[0]
+    f_p = glob.glob(os.path.join(args.input_root,ending))[0]
     with open(f_p,"r") as f:
         for l in f:
             j_l = json.loads(l)
@@ -52,8 +58,13 @@ def load_ids(data_path):
 
 def filter_data(args,ids):
     count=0
+    if args.mode =='corpus':
+        ending = "100k_long_doc_corpus"
+    else:
+        ending = "test_dev_long_doc_subset"
+
     data_files = glob.glob(os.path.join(args.input_root,"*zst"))
-    output_data_path = os.path.join(args.input_root,f"{os.path.basename(args.input_root)}_100k_long_doc_subset.jsonl")
+    output_data_path = os.path.join(args.input_root,f"{os.path.basename(args.input_root)}_{ending}.jsonl")
     with open(output_data_path,"w") as out_file:
         for jsonl in read_zst_files(data_files):
             if jsonl['id'] in ids:
@@ -73,13 +84,14 @@ def filter_data(args,ids):
 def argparser():
     ap = ArgumentParser()
     ap.add_argument('--input_root',help="output file path for results")
+    ap.add_argument('--mode',default='corpus',help="filter mode, corpus for full corpus and test_dev for test data")
     ap.add_argument('--test',action='store_true')
     return ap
 
 if __name__ == "__main__":
     args = argparser().parse_args()
     start = time.perf_counter()
-    ids = load_ids(args.input_root)
+    ids = load_ids(args)
     elapsed = time.perf_counter() - start
     print(f"Loaded ids: {elapsed/60:.2f} minutes",flush=True)
     start = time.perf_counter()
