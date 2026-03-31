@@ -2,7 +2,7 @@ import json
 import time
 from argparse import ArgumentParser
 from basic_tokenizer import basic_tokenize
-
+from filter_corpus import read_zst_files
 
 def argparser():
     ap = ArgumentParser()
@@ -14,11 +14,10 @@ def argparser():
 def count_tokens(args):
     d = []
     docs = 0
-    with open(args.input_file) as in_file, open(args.output_file, "w") as out_file:
-        for ind,line in enumerate(in_file,start=1):
-            data_in = json.loads(line)
-            text = data_in['text']
-            uid = data_in['id']
+    with open(args.output_file, "w") as out_file:
+        for ind,line in enumerate(read_zst_files(args.input_file),start=1):
+            text = line['text']
+            uid = line['id']
             docs += 1
             words = len(basic_tokenize(text))
             chars = len(text)
