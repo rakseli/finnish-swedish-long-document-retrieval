@@ -32,7 +32,7 @@ def prompt_label(line: str) -> int:
     print(line['text'][:1000])
     print("=" * 80)
     while True:
-        ans = input("Good text? [y/n/q] ").strip().lower()
+        ans = input("Good? [y/n/q] ").strip().lower()
         if ans in ("y", "yes"):
             return 1
         if ans in ("n", "no"):
