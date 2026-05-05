@@ -35,9 +35,11 @@ def create_slurm_scripts(lr,model_name,running_jobs,args,lang,split):
     if job_name in running_jobs:
         print(f"Job {job_name} is currently running, skipping...")
         return None
-    output_base_dir = "../results/mteb_evaluations"
-    output_folder = os.path.join(output_base_dir,f"{model_shortname}")
+    print(model_shortname)
+    output_base_dir = "/scratch/project_2018556/finnish-swedish-long-document-retrieval/results/mteb_evaluations"
+    output_folder = os.path.join(output_base_dir,f"{model_shortname}-{lr}")
     final_res = os.path.join(output_folder,f"FinnishSwedishLongDocRetrieval_{lang}_{split}.json")
+    print(final_res)
     script_content = f"""#!/bin/bash
 #SBATCH --job-name={job_name}
 #SBATCH --account=project_2018556
@@ -90,7 +92,7 @@ if __name__ == '__main__':
             "finnish-modernbert-large-short",
             "finnish-modernbert-tiny-short-cpt",
             "finnish-modernbert-base-short-cpt",
-            "finnish-modernbert-large-short-cpt"
+            "finnish-modernbert-large-short-cpt",
             "finnish-modernbert-tiny-short-edu",
             "finnish-modernbert-large-short-edu",
             "finnish-modernbert-base-short-edu",
@@ -104,8 +106,7 @@ if __name__ == '__main__':
         for l in hp_search_results:
             lines.append(json.loads(l))
         best_lrs = dict([(l['model'],l['lr']) for l in lines if l['model'] in models])
-        print(f"Best lrs: {best_lrs}")
-    
+
     should_break=False
     dry_run_jobs = 0
     job_count = 0
@@ -127,7 +128,7 @@ if __name__ == '__main__':
                 if command is None:
                     continue
                 if args.dry_run:
-                    print(command)
+                    #print(command)
                     dry_run_jobs+=1
                 else:
                     temp_file_name = f"{os.getcwd()}/{m}-lr-{lr}_{s}_slurm_job.sh"
