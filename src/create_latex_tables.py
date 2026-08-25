@@ -165,8 +165,8 @@ def make_corpus_stats_table(root_dir,
 
 
 def make_paragrahp_stats_table(root_dir,
-    caption: Optional[str] = "Corpus statistics.",
-    label: Optional[str] = "tab:corpus_stats",
+    caption: Optional[str] = "Paragraph statistics.",
+    label: Optional[str] = "tab:para_stats",
 ) -> str:
     files = glob(f"{root_dir}/**/*_paragraph_start_stats.csv")
     if "fin" in files[0]:
